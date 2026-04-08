@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Directory</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 2rem auto;
+      max-width: 900px;
+      line-height: 1.5;
+    }
+    form {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    input[type="search"] {
+      flex: 1;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button, .clear-link {
+      padding: 0.5rem 0.9rem;
+      border-radius: 4px;
+      border: 1px solid #0069d9;
+      background: #0069d9;
+      color: #fff;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .clear-link {
+      border-color: #888;
+      background: #f5f5f5;
+      color: #222;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    th, td {
+      padding: 0.75rem 0.5rem;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+    th {
+      color: #555;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    tbody tr:hover {
+      background: #f9f9f9;
+    }
+    .empty-state {
+      padding: 1rem;
+      background: #fff8e1;
+      border: 1px solid #ffe0b2;
+    }
+  </style>
+</head>
+<body>
+  <h1>Student Directory</h1>
+  <form method="get">
+    <input
+      type="search"
+      name="q"
+      value="{{ query }}"
+      placeholder="Search by first name, last name, email, or course"
+      aria-label="Search students"
+    />
+    <button type="submit">Search</button>
+    {% if query %}
+      <a class="clear-link" href="{% url 'student-list' %}">Clear</a>
+    {% endif %}
+  </form>
+
+  {% if students %}
+    <table>
+      <thead>
+        <tr>
+          <th>NAME</th>
+          <th>EMAIL</th>
+          <th>COURSE</th>
+          <th>ENROLLED ON</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for student in students %}
+          <tr>
+            <td>{{ student.first_name }} {{ student.last_name }}</td>
+            <td>{{ student.email }}</td>
+            <td>{{ student.course|default:'—' }}</td>
+            <td>{{ student.enrolled_on }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="empty-state">
+      {% if query %}
+        No students match "{{ query }}". Try another keyword.
+      {% else %}
+        Nothing to show yet. Add students through the admin panel or via fixtures.
+      {% endif %}
+    </p>
+  {% endif %}
+</body>
+</html>

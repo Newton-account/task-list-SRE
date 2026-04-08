@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ assignment.title }}</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 2rem auto;
+      max-width: 700px;
+      line-height: 1.5;
+    }
+    .header-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 2rem;
+    }
+    .header-section h1 {
+      margin: 0;
+    }
+    .details {
+      background: #f9f9f9;
+      padding: 1.5rem;
+      border-radius: 4px;
+      border-left: 4px solid #0069d9;
+    }
+    .detail-row {
+      margin-bottom: 1.5rem;
+    }
+    .detail-row:last-child {
+      margin-bottom: 0;
+    }
+    .label {
+      font-weight: 600;
+      color: #555;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .value {
+      margin-top: 0.25rem;
+      color: #333;
+      font-size: 1rem;
+    }
+    .description {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .status {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    .status.completed {
+      background: #d4edda;
+      color: #155724;
+    }
+    .status.pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+    .actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 2rem;
+    }
+    a.btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    a.btn-primary {
+      background: #0069d9;
+      color: white;
+    }
+    a.btn-primary:hover {
+      background: #0056b3;
+    }
+    a.btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+    a.btn-secondary:hover {
+      background: #5a6268;
+    }
+  </style>
+</head>
+<body>
+  <div class="header-section">
+    <h1>{{ assignment.title }}</h1>
+  </div>
+
+  <div class="details">
+    <div class="detail-row">
+      <div class="label">Student</div>
+      <div class="value">{{ assignment.student.first_name }} {{ assignment.student.last_name }}</div>
+    </div>
+
+    <div class="detail-row">
+      <div class="label">Email</div>
+      <div class="value">{{ assignment.student.email }}</div>
+    </div>
+
+    <div class="detail-row">
+      <div class="label">Course</div>
+      <div class="value">{{ assignment.student.course|default:"—" }}</div>
+    </div>
+
+    <div class="detail-row">
+      <div class="label">Due Date</div>
+      <div class="value">{{ assignment.due_date|date:"F j, Y g:i A" }}</div>
+    </div>
+
+    <div class="detail-row">
+      <div class="label">Status</div>
+      <div class="value">
+        {% if assignment.is_completed %}
+          <span class="status completed">Completed</span>
+        {% else %}
+          <span class="status pending">Pending</span>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if assignment.description %}
+      <div class="detail-row">
+        <div class="label">Description</div>
+        <div class="value description">{{ assignment.description }}</div>
+      </div>
+    {% endif %}
+
+    <div class="detail-row">
+      <div class="label">Created</div>
+      <div class="value">{{ assignment.created_at|date:"F j, Y g:i A" }}</div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <a href="{% url 'assignment-update' assignment.pk %}" class="btn btn-primary">Edit Assignment</a>
+    <a href="{% url 'assignment-list' %}" class="btn btn-secondary">Back to List</a>
+  </div>
+</body>
+</html>
