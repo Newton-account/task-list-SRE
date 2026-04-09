@@ -1,0 +1,211 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content_title %}{% endblock %}
+
+{% block content %}
+  <div class="sm-admin-shell">
+    <style>
+      .sm-hero {
+        margin-bottom: 22px;
+        padding: 28px 30px;
+        border-radius: var(--sm-radius-xl);
+        background: linear-gradient(135deg, rgba(180, 108, 65, 0.96), rgba(110, 57, 32, 0.92));
+        color: #fffaf4;
+        box-shadow: var(--sm-shadow);
+      }
+
+      .sm-hero p {
+        margin: 10px 0 0;
+        max-width: 48rem;
+        color: rgba(255, 244, 236, 0.88);
+        line-height: 1.7;
+      }
+
+      .sm-page-title {
+        margin: 0;
+        font-size: clamp(2.2rem, 4vw, 3.3rem);
+        line-height: 0.98;
+      }
+
+      .sm-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 16px;
+        margin-bottom: 22px;
+      }
+
+      .sm-stat,
+      .sm-card {
+        border-radius: var(--sm-radius-lg);
+        background: var(--sm-surface);
+        border: 1px solid var(--sm-border);
+        box-shadow: var(--sm-shadow);
+      }
+
+      .sm-stat {
+        padding: 20px 22px;
+      }
+
+      .sm-stat span {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--sm-muted);
+        font-size: 0.85rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .sm-stat strong {
+        display: block;
+        font-size: 2.2rem;
+        line-height: 1;
+      }
+
+      .sm-stat p {
+        margin: 10px 0 0;
+        color: var(--sm-muted);
+      }
+
+      .sm-layout {
+        display: grid;
+        grid-template-columns: 1.4fr 0.9fr;
+        gap: 18px;
+      }
+
+      .sm-card {
+        padding: 24px;
+      }
+
+      .sm-card h2 {
+        margin: 0 0 12px;
+        font-size: 1.6rem;
+      }
+
+      .sm-card p {
+        margin: 0 0 18px;
+        color: var(--sm-muted);
+        line-height: 1.7;
+      }
+
+      .sm-app-list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .sm-app-item {
+        padding: 16px 18px;
+        border-radius: var(--sm-radius-md);
+        background: var(--sm-surface-soft);
+        border: 1px solid var(--sm-border);
+      }
+
+      .sm-app-item strong {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 1rem;
+      }
+
+      .sm-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .sm-links a {
+        display: inline-flex;
+        align-items: center;
+        padding: 9px 12px;
+        border-radius: 999px;
+        background: white;
+        border: 1px solid var(--sm-border);
+        font-weight: 700;
+      }
+
+      .sm-quick {
+        display: grid;
+        gap: 12px;
+      }
+
+      .sm-quick a {
+        display: block;
+        padding: 14px 16px;
+        border-radius: var(--sm-radius-md);
+        background: var(--sm-accent-soft);
+        color: var(--sm-accent);
+        font-weight: 700;
+      }
+
+      @media (max-width: 900px) {
+        .sm-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+
+    <section class="sm-hero">
+      <h1 class="sm-page-title">{% trans "Site administration" %}</h1>
+      <p>Manage student records and assignment data from a cleaner admin home. Use the model shortcuts below to add records, review content, and move directly into editing screens.</p>
+    </section>
+
+    <section class="sm-grid">
+      <article class="sm-stat">
+        <span>Registered Models</span>
+        <strong>{{ app_list|length }}</strong>
+        <p>App sections available in this administration area.</p>
+      </article>
+      <article class="sm-stat">
+        <span>Primary Focus</span>
+        <strong>Students</strong>
+        <p>Directory records, enrolment details, and course assignments.</p>
+      </article>
+      <article class="sm-stat">
+        <span>Primary Focus</span>
+        <strong>Assignments</strong>
+        <p>Coursework tracking, due dates, and completion updates.</p>
+      </article>
+    </section>
+
+    <section class="sm-layout">
+      <article class="sm-card">
+        <h2>App overview</h2>
+        <p>Choose a model to browse existing records or jump into the create form.</p>
+        <div class="sm-app-list">
+          {% for app in app_list %}
+            <div class="sm-app-item">
+              <strong>{{ app.name }}</strong>
+              <div class="sm-links">
+                {% for model in app.models %}
+                  {% if model.admin_url %}
+                    <a href="{{ model.admin_url }}">{{ model.name }}</a>
+                  {% endif %}
+                  {% if model.add_url %}
+                    <a href="{{ model.add_url }}">Add {{ model.name }}</a>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+          {% empty %}
+            <div class="sm-app-item">
+              <strong>No admin models available</strong>
+              <div class="sm-links">
+                <span>Nothing is registered for this account.</span>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </article>
+
+      <aside class="sm-card">
+        <h2>Quick actions</h2>
+        <p>Use the most common routes without scanning the full navigation tree.</p>
+        <div class="sm-quick">
+          <a href="/">Open main dashboard</a>
+          <a href="{% url 'student-list' %}">Open student directory</a>
+          <a href="{% url 'assignment-list' %}">Open assignments page</a>
+          <a href="{% url 'admin:password_change' %}">Change password</a>
+        </div>
+      </aside>
+    </section>
+  </div>
+{% endblock %}

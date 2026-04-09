@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | Student Management{% endblock %}
+
+{% block content %}
+  <section class="page-header">
+    <div>
+      <h1>Academic dashboard</h1>
+      <p>See student volume, assignment load, and upcoming deadlines from one place. This overview is designed for quick daily review instead of raw tables.</p>
+    </div>
+    <div class="header-actions">
+      <a class="btn btn-light" href="{% url 'assignment-create' %}">Create Assignment</a>
+      <a class="btn btn-secondary" href="{% url 'student-list' %}">Open Student Directory</a>
+    </div>
+  </section>
+
+  <section class="metrics-grid">
+    <article class="metric-card">
+      <span>Total Students</span>
+      <strong>{{ total_students }}</strong>
+      <p>Registered learners in the directory.</p>
+    </article>
+    <article class="metric-card">
+      <span>Total Assignments</span>
+      <strong>{{ total_assignments }}</strong>
+      <p>All coursework items currently tracked.</p>
+    </article>
+    <article class="metric-card">
+      <span>Pending Work</span>
+      <strong>{{ pending_assignments }}</strong>
+      <p>Assignments still awaiting completion.</p>
+    </article>
+    <article class="metric-card">
+      <span>Overdue</span>
+      <strong>{{ overdue_assignments }}</strong>
+      <p>Past deadline and not marked complete.</p>
+    </article>
+  </section>
+
+  <section class="split-grid">
+    <article class="panel">
+      <div class="toolbar">
+        <div>
+          <h2 class="section-title">Completion health</h2>
+          <p class="muted">{{ completed_assignments }} completed out of {{ total_assignments }} assignments.</p>
+        </div>
+        <span class="badge badge-success">{{ completion_rate }}% complete</span>
+      </div>
+      <div class="progress" aria-label="Assignment completion">
+        <span style="width: {{ completion_rate }}%;"></span>
+      </div>
+      <div class="metrics-grid" style="margin-top: 18px;">
+        <article class="metric-card">
+          <span>Completed</span>
+          <strong>{{ completed_assignments }}</strong>
+          <p>Work already submitted or closed.</p>
+        </article>
+        <article class="metric-card">
+          <span>Due This Week</span>
+          <strong>{{ due_this_week }}</strong>
+          <p>Assignments needing attention soon.</p>
+        </article>
+      </div>
+    </article>
+
+    <article class="panel">
+      <div class="toolbar">
+        <div>
+          <h2 class="section-title">Recent students</h2>
+          <p class="muted">Newest enrolments or latest added records.</p>
+        </div>
+        <a class="btn btn-primary" href="{% url 'student-list' %}">View All</a>
+      </div>
+      {% if recent_students %}
+        <div class="stack-list">
+          {% for student in recent_students %}
+            <div class="stack-item">
+              <strong>{{ student.first_name }} {{ student.last_name }}</strong>
+              <p>{{ student.course|default:"Course not set" }}</p>
+              <p class="muted">{{ student.email }}</p>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="empty-state">No student records yet. Add students from the admin area to populate the dashboard.</p>
+      {% endif %}
+    </article>
+  </section>
+
+  <section class="panel">
+    <div class="toolbar">
+      <div>
+        <h2 class="section-title">Upcoming assignments</h2>
+        <p class="muted">Next pending deadlines ordered by closest due date.</p>
+      </div>
+      <a class="btn btn-primary" href="{% url 'assignment-list' %}">Manage Assignments</a>
+    </div>
+    {% if upcoming_assignments %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Assignment</th>
+              <th>Student</th>
+              <th>Due date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for assignment in upcoming_assignments %}
+              <tr>
+                <td>
+                  <strong>{{ assignment.title }}</strong>
+                  {% if assignment.description %}
+                    <p class="muted">{{ assignment.description|truncatechars:90 }}</p>
+                  {% endif %}
+                </td>
+                <td>{{ assignment.student }}</td>
+                <td>{{ assignment.due_date|date:"M j, Y g:i A" }}</td>
+                <td><span class="badge badge-warning">Pending</span></td>
+                <td class="table-actions">
+                  <a class="btn btn-light" href="{% url 'assignment-update' assignment.pk %}">Update</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="empty-state">No pending assignments are scheduled right now.</p>
+    {% endif %}
+  </section>
+{% endblock %}

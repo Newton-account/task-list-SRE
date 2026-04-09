@@ -1,0 +1,290 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}Student Management Admin{% endblock %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <style>
+    :root {
+      --sm-bg: #f3ece2;
+      --sm-surface: #fffaf4;
+      --sm-surface-soft: #f8f1e8;
+      --sm-border: rgba(71, 52, 38, 0.12);
+      --sm-text: #211b16;
+      --sm-muted: #73675e;
+      --sm-primary: #b46c41;
+      --sm-primary-dark: #8c4f2c;
+      --sm-accent: #1f6c66;
+      --sm-accent-soft: #d8ece7;
+      --sm-shadow: 0 24px 60px rgba(86, 60, 41, 0.12);
+      --sm-radius-xl: 28px;
+      --sm-radius-lg: 20px;
+      --sm-radius-md: 16px;
+      --sm-display: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+      --sm-body: "Verdana", "Segoe UI", sans-serif;
+    }
+
+    body,
+    #container,
+    #content,
+    .dashboard #content {
+      background: linear-gradient(180deg, #faf5ee 0%, var(--sm-bg) 100%);
+    }
+
+    body,
+    button,
+    input,
+    select,
+    textarea {
+      font-family: var(--sm-body);
+      color: var(--sm-text);
+    }
+
+    input,
+    textarea,
+    select {
+      background: #fffdf9;
+      color: var(--sm-text) !important;
+      caret-color: var(--sm-text);
+      border: 1px solid var(--sm-border);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: var(--sm-muted);
+      opacity: 1;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      background: #fffdf9;
+      color: var(--sm-text) !important;
+      border-color: rgba(31, 108, 102, 0.4);
+      box-shadow: 0 0 0 3px rgba(31, 108, 102, 0.08);
+      outline: none;
+    }
+
+    #header {
+      background: rgba(255, 250, 244, 0.78);
+      color: var(--sm-text);
+      border-bottom: 1px solid var(--sm-border);
+      backdrop-filter: blur(14px);
+    }
+
+    #branding h1,
+    .sm-page-title,
+    .sm-card h2,
+    .sm-stat strong {
+      font-family: var(--sm-display);
+    }
+
+    #branding h1 {
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    #branding h1 a:link,
+    #branding h1 a:visited,
+    #user-tools,
+    #user-tools a {
+      color: var(--sm-text);
+    }
+
+    div.breadcrumbs {
+      background: transparent;
+      border: none;
+      color: var(--sm-muted);
+      padding: 14px 40px 0;
+    }
+
+    div.breadcrumbs a {
+      color: var(--sm-primary-dark);
+    }
+
+    #nav-sidebar {
+      background: rgba(255, 250, 244, 0.72);
+      border-right: 1px solid var(--sm-border);
+    }
+
+    .module,
+    .submit-row,
+    .inline-group,
+    .selector,
+    .paginator,
+    #changelist-filter,
+    #changelist table,
+    .results,
+    .dashboard .module table {
+      border-radius: var(--sm-radius-md);
+      overflow: hidden;
+      border-color: var(--sm-border);
+      box-shadow: none;
+    }
+
+    #changelist table,
+    #changelist table caption,
+    #changelist table thead th,
+    #changelist table tbody td,
+    #changelist table tbody th,
+    #changelist .results table,
+    #result_list {
+      color: var(--sm-text);
+      background: var(--sm-surface);
+    }
+
+    #changelist table thead th,
+    #changelist table thead th a,
+    #changelist table thead th .text span {
+      color: var(--sm-text);
+      background: var(--sm-surface-soft);
+    }
+
+    #changelist table tbody tr:nth-child(even) {
+      background: rgba(248, 241, 232, 0.7);
+    }
+
+    #changelist table tbody tr,
+    #changelist table tbody th,
+    #changelist table tbody td,
+    #changelist .results tbody th,
+    #changelist .results tbody td {
+      color: var(--sm-text) !important;
+    }
+
+    #changelist table tbody tr:hover,
+    #changelist table tbody tr:hover th,
+    #changelist table tbody tr:hover td {
+      background: #f5ecdf;
+      color: var(--sm-text);
+    }
+
+    #changelist table tbody th a,
+    #changelist table tbody td a,
+    #result_list tbody th a,
+    #result_list tbody td a {
+      color: var(--sm-primary-dark);
+    }
+
+    #changelist .results tbody tr.selected,
+    #changelist .results tbody tr.selected th,
+    #changelist .results tbody tr.selected td {
+      background: #eadfd1;
+      color: var(--sm-text);
+    }
+
+    #changelist .results tbody tr.selected a {
+      color: var(--sm-primary-dark);
+    }
+
+    #changelist-search input,
+    #toolbar input,
+    #searchbar,
+    .selector input,
+    .vTextField,
+    .vURLField,
+    .vLargeTextField,
+    .vIntegerField,
+    .vDateField,
+    .vTimeField,
+    .vDateTimeField,
+    .vForeignKeyRawIdAdminField {
+      background: #fffdf9 !important;
+      color: var(--sm-text) !important;
+      caret-color: var(--sm-text);
+    }
+
+    .button,
+    input[type=submit],
+    input[type=button],
+    .submit-row input,
+    a.button {
+      background: var(--sm-primary);
+      border-radius: 999px;
+      border: none;
+    }
+
+    .button.default,
+    input[type=submit].default,
+    .submit-row input.default {
+      background: linear-gradient(135deg, var(--sm-primary), #d48653);
+    }
+
+    a:link,
+    a:visited {
+      color: var(--sm-primary-dark);
+    }
+
+    #user-tools {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.92rem;
+    }
+
+    .sm-user-links {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .sm-logout-form {
+      display: inline;
+      margin: 0;
+    }
+
+    .sm-logout-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 14px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--sm-primary), #d48653);
+      color: #fff !important;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 10px 22px rgba(86, 60, 41, 0.12);
+      border: none;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .sm-admin-shell {
+      padding: 10px 0 24px;
+    }
+
+    @media (max-width: 767px) {
+      div.breadcrumbs {
+        padding: 12px 16px 0;
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block branding %}
+  <h1 id="site-name"><a href="{% url 'admin:index' %}">Student Management Admin</a></h1>
+{% endblock %}
+
+{% block usertools %}
+  {% if has_permission %}
+    <div id="user-tools">
+      <span>{% translate 'Welcome,' %} <strong>{% firstof user.get_short_name user.get_username %}</strong></span>
+      <div class="sm-user-links">
+        {% if site_url %}
+          <a href="{{ site_url }}">{% translate 'View site' %}</a>
+        {% endif %}
+        {% if user.has_usable_password %}
+          <a href="{% url 'admin:password_change' %}">{% translate 'Change password' %}</a>
+        {% endif %}
+        <form class="sm-logout-form" action="{% url 'admin:logout' %}" method="post">
+          {% csrf_token %}
+          <button class="sm-logout-btn" type="submit">{% translate 'Logout' %}</button>
+        </form>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

@@ -17,11 +17,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
-from sudents.views import student_list
+from sudents.views import dashboard, student_list
 
 urlpatterns = [
-    path('', admin.site.urls),
+    path('', dashboard, name='dashboard'),
     path('admin/', admin.site.urls),
     path('students/', student_list, name='student-list'),
     path('assignments/', include('assignments.urls')),
 ]
+
+
+# Username: admin
+# Password: Admin@12345

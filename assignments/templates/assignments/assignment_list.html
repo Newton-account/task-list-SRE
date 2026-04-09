@@ -1,42 +1,92 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Assignments</title>
-  <style>
-    body { font-family: system-ui, sans-serif; margin: 2rem auto; max-width: 1200px; }
-    .overdue { color: #d32f2f; font-weight: bold; }
-    .due-soon { color: #f57c00; }
-    .completed { text-decoration: line-through; color: #4caf50; }
-    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-    th, td { padding: 0.75rem; border-bottom: 1px solid #eee; text-align: left; }
-  </style>
-</head>
-<body>
-  <h1>Assignments</h1>
-  <a href="{% url 'assignment-create' %}">Create New Assignment</a>
-  
-  <table>
-    <thead>
-      <tr>
-        <th>Title</th>
-        <th>Student</th>
-        <th>Due Date</th>
-        <th>Status</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for assignment in assignments %}
-        <tr class="{% if assignment.is_completed %}completed{% elif assignment.due_date < now %}overdue{% elif assignment.due_date < now|date:'+7 days' %}due-soon{% endif %}">
-          <td>{{ assignment.title }}</td>
-          <td>{{ assignment.student }}</td>
-          <td>{{ assignment.due_date|date:"M j, Y g:i A" }}</td>
-          <td>{% if assignment.is_completed %}Completed{% else %}Pending{% endif %}</td>
-          <td><a href="{% url 'assignment-update' assignment.pk %}">Edit</a></td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Assignments | Student Management{% endblock %}
+
+{% block content %}
+  <section class="page-header">
+    <div>
+      <h1>Assignments</h1>
+      <p>Monitor pending coursework, spot overdue submissions, and update records from a single operational view.</p>
+    </div>
+    <div class="header-actions">
+      <a class="btn btn-light" href="{% url 'assignment-create' %}">Create Assignment</a>
+      <a class="btn btn-secondary" href="{% url 'dashboard' %}">Back to Dashboard</a>
+    </div>
+  </section>
+
+  <section class="metrics-grid">
+    <article class="metric-card">
+      <span>Total</span>
+      <strong>{{ total_assignments }}</strong>
+      <p>All assignments in the system.</p>
+    </article>
+    <article class="metric-card">
+      <span>Completed</span>
+      <strong>{{ completed_assignments }}</strong>
+      <p>Marked as finished.</p>
+    </article>
+    <article class="metric-card">
+      <span>Pending</span>
+      <strong>{{ pending_assignments }}</strong>
+      <p>Still requiring action.</p>
+    </article>
+    <article class="metric-card">
+      <span>Overdue</span>
+      <strong>{{ overdue_assignments }}</strong>
+      <p>Past due and incomplete.</p>
+    </article>
+  </section>
+
+  <section class="panel">
+    <div class="toolbar">
+      <div>
+        <h2 class="section-title">Assignment register</h2>
+        <p class="muted">Assignments are ordered by nearest due date first.</p>
+      </div>
+    </div>
+
+    {% if assignments %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Student</th>
+              <th>Due Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for assignment in assignments %}
+              <tr>
+                <td>
+                  <strong>{{ assignment.title }}</strong>
+                  {% if assignment.description %}
+                    <p class="muted">{{ assignment.description|truncatechars:100 }}</p>
+                  {% endif %}
+                </td>
+                <td>{{ assignment.student }}</td>
+                <td>{{ assignment.due_date|date:"M j, Y g:i A" }}</td>
+                <td>
+                  {% if assignment.is_completed %}
+                    <span class="badge badge-success">Completed</span>
+                  {% elif assignment.due_date < now %}
+                    <span class="badge badge-danger">Overdue</span>
+                  {% else %}
+                    <span class="badge badge-warning">Pending</span>
+                  {% endif %}
+                </td>
+                <td class="table-actions">
+                  <a class="btn btn-light" href="{% url 'assignment-update' assignment.pk %}">Update</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="empty-state">No assignments have been created yet.</p>
+    {% endif %}
+  </section>
+{% endblock %}
