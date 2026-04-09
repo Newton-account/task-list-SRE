@@ -142,12 +142,6 @@
         }
       }
     </style>
-
-    <section class="sm-hero">
-      <h1 class="sm-page-title">{% trans "Site administration" %}</h1>
-      <p>Manage student records and assignment data from a cleaner admin home. Use the model shortcuts below to add records, review content, and move directly into editing screens.</p>
-    </section>
-
     <section class="sm-grid">
       <article class="sm-stat">
         <span>Registered Models</span>
@@ -200,7 +194,7 @@
         <h2>Quick actions</h2>
         <p>Use the most common routes without scanning the full navigation tree.</p>
         <div class="sm-quick">
-          <a href="/">Open main dashboard</a>
+          <a href="{% url 'dashboard' %}">Open main dashboard</a>
           <a href="{% url 'student-list' %}">Open student directory</a>
           <a href="{% url 'assignment-list' %}">Open assignments page</a>
           <a href="{% url 'admin:password_change' %}">Change password</a>
